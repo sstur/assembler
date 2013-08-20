@@ -1,0 +1,25 @@
+{
+  "name": "assembler",
+  "version": "0.0.1",
+  "description": "Assemble and minify your project's CSS and JS files for deployment",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sstur/assembler"
+  },
+  "keywords": [
+    "assets",
+    "css",
+    "js",
+    "scripts",
+    "build",
+    "minify",
+    "compress",
+    "assemble"
+  ],
+  "author": "sstur@me.com",
+  "license": "BSD"
+}
