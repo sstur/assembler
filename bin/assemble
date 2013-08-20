@@ -1,4 +1,4 @@
 #! /usr/bin/env node
 // -*- js -*-
 
-require('./main').exec();
+require('../main').exec();
