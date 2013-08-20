@@ -8,14 +8,16 @@
   var cleanCSS = require('clean-css');
   var uglifyJS = require('uglify-js');
 
+  var CSS_INCLUDE = /@import(\s+)(url\(".+?"\)|".+?");/g;
 
   var handlers = {
-    css: function(opts) {
+    css: function(opts, mappath) {
       console.log('Loading CSS files...');
 
       var source = fs.readFileSync(mappath(opts.input), 'utf8');
 
-      source = source.replace(/@import url\("(.+?)"\);/g, function(line, path) {
+      source = source.replace(CSS_INCLUDE, function(line) {
+        var path = line.match(/"(.+?)"/)[1];
         console.log(opts.path + '/' + path);
         //css "includes" are specified relative to current path
         return fs.readFileSync(mappath(opts.path, path), 'utf8');
@@ -30,13 +32,13 @@
       console.log('Done.\n');
     },
 
-    views: function(opts) {
+    views: function(opts, mappath) {
       console.log('Loading Views...');
       var fileList = fs.readdirSync(mappath(opts.path));
 
       var views = {};
       fileList.forEach(function(name) {
-        //todo: don't hard-code the ext here
+        //todo: don't hard-code the extension here
         if (name.match(/\.html$/i)) {
           console.log(opts.path + '/' + name);
           var source = fs.readFileSync(mappath(opts.path, name), 'utf8');
@@ -44,13 +46,14 @@
           views[name] = source;
         }
       });
-      var source = 'var ' + opts.variable + ' = ' + JSON.stringify(views) + ';';
+      var source = JSON.stringify(views);
+      source = opts.outputTmpl.replace('[[DATA]]', source);
       fs.writeFileSync(mappath(opts.output), source, 'utf8');
 
       console.log('Done.\n');
     },
 
-    scripts: function(opts) {
+    scripts: function(opts, mappath) {
       console.log('Loading JS files...');
 
       var source = fs.readFileSync(mappath(opts.input), 'utf8');
@@ -98,23 +101,35 @@
 
   //todo: if callback present, do async
   function exec(config, callback) {
-    var basePath = config.basePath || path.dirname(process.argv[1]);
-
-    if (!config) {
-      var args = getArgs(basePath);
+    if (config) {
+      //handle usage as a module
+      var args = config.args ? parseArgs(config.args) : [];
+    } else {
+      //handle usage from terminal/command line
+      args = parseArgs(process.argv.slice(2));
+      if (args.configPath) {
+        var configPath = path.join(process.cwd(), args.configPath);
+      } else {
+        configPath = path.join(path.dirname(process.argv[1]), args.configPath);
+      }
+      if (!configPath.match(/\.json$/)) {
+        configPath = path.join(configPath, 'build-conf.json');
+      }
+      //basePath is the location in which the config file lives
+      var basePath = path.dirname(configPath);
       config = fs.readFileSync(path.join(args.configPath, 'build-conf.json'), 'utf8');
       config = JSON.parse(config);
     }
 
     //var mappath = path.join.bind(path, basePath);
     var mappath = function() {
-      var paths = Array.prototype.unshift.call(arguments);
+      var paths = Array.prototype.slice.call(arguments);
       paths.unshift(basePath);
       return path.join.apply(path, paths);
     };
 
     config.assemble.forEach(function(opts) {
-      if (args) util._extend(opts, args);
+      util._extend(opts, args);
       var handler = handlers[opts.type];
       if (handler) {
         handler(opts, mappath);
@@ -132,23 +147,22 @@
   }
 
 
-  function getArgs(basePath) {
-    //load cmd line args as true/false flags
+  function parseArgs(allArgs) {
+    //parse arguments as true/false flags
     var args = {}, configPath;
-    process.argv.slice(1).forEach(function(arg) {
+    allArgs.forEach(function(arg) {
       if (arg.charAt(0) == '-') {
-        arg = args.replace(/^-+/);
+        arg = arg.replace(/^-+/, '');
         //camel-case
         arg = arg.replace(/-(.)/g, function(_, ch) {
           return ch.toUpperCase();
         });
         args[arg] = true;
       } else {
-        configPath = path.join(basePath, arg)
+        configPath = arg;
       }
     });
-
-    args.configPath = (configPath == null) ? basePath : configPath;
+    args.configPath = configPath;
     return args;
   }
 

@@ -25,5 +25,8 @@
   "dependencies": {
     "clean-css": "~1.0.12",
     "uglify-js": "~2.3.6"
+  },
+  "bin": {
+    "assemble": "bin/assemble"
   }
 }
