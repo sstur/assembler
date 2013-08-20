@@ -1,14 +1,15 @@
 {
   "name": "assembler",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Assemble and minify your assets for deployment",
+  "homepage": "http://github.com/sstur/assembler",
   "main": "main.js",
   "scripts": {
     "test": "mocha test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sstur/assembler"
+    "url": "git@github.com:sstur/assembler.git"
   },
   "keywords": [
     "assets",
