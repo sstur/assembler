@@ -1,6 +1,6 @@
 {
   "name": "assembler",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "Assemble and minify your assets for deployment",
   "main": "main.js",
   "scripts": {
