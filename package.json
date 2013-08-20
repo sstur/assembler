@@ -1,7 +1,7 @@
 {
   "name": "assembler",
   "version": "0.0.1",
-  "description": "Assemble and minify your project's CSS and JS files for deployment",
+  "description": "Assemble and minify your assets for deployment",
   "main": "main.js",
   "scripts": {
     "test": "mocha test"
@@ -21,5 +21,9 @@
     "assemble"
   ],
   "author": "sstur@me.com",
-  "license": "BSD"
+  "license": "BSD",
+  "dependencies": {
+    "clean-css": "~1.0.12",
+    "uglify-js": "~2.3.6"
+  }
 }
