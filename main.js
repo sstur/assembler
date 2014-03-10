@@ -107,19 +107,19 @@
     } else {
       //handle usage from terminal/command line
       args = parseArgs(process.argv.slice(2));
-      if (args.configPath) {
-        var configPath = path.join(process.cwd(), args.configPath);
-      } else {
-        configPath = path.join(path.dirname(process.argv[1]), args.configPath);
-      }
-      if (!configPath.match(/\.json$/)) {
-        configPath = path.join(configPath, 'build-conf.json');
-      }
-      //basePath is the location in which the config file lives
-      var basePath = path.dirname(configPath);
-      config = fs.readFileSync(path.join(args.configPath, 'build-conf.json'), 'utf8');
-      config = JSON.parse(config);
     }
+    if (args.configPath) {
+      var configPath = path.join(process.cwd(), args.configPath);
+    } else {
+      configPath = path.join(path.dirname(process.argv[1]), args.configPath);
+    }
+    if (!configPath.match(/\.json$/)) {
+      configPath = path.join(configPath, 'build-conf.json');
+    }
+    //basePath is the location in which the config file lives
+    var basePath = path.dirname(configPath);
+    config = fs.readFileSync(path.join(args.configPath, 'build-conf.json'), 'utf8');
+    config = JSON.parse(config);
 
     //var mappath = path.join.bind(path, basePath);
     var mappath = function() {
